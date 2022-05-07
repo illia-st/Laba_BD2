@@ -32,48 +32,54 @@ namespace Laba_BD2
 
         private void Add_btn_Click(object sender, EventArgs e)
         {
-            var connection = new DB();
-            var value1 = First_box.Text;
-            var value2 = Second_box.Text;
-            switch (this.Option)
+            try
             {
-                case Adding.Genre:
-                    var words = ParserOfAddedInfo.TrimValue(value1);
-                    if(Equals(words.Count(), 1))
-                    {
-                        //call db method
-                        connection.AddGenre(words.First());
-                        break;
-                    }
-                    // кинути ексепшн
-                    throw new Exception("Не коректно введені параметри в текстове поле");
-                case Adding.Movie:
-                    words = ParserOfAddedInfo.TrimValue(value1, value2);
-                    if(Equals(4, words.Count()))
-                    {
-                        //call db method
-                        connection.AddMovie(words);
-                        break;
-                    }
-                    // throw an exception
-                    throw new Exception("Не коректно введені параметри в текстове поле");
-                case Adding.Like:
-                    words = ParserOfAddedInfo.TrimValue(value1, value2);
-                    if(Equals(2, words.Count()))
-                    {
-                        //call db method
-                        connection.AddLike(words);
-                        break;
-                    }
-                    throw new Exception("Не коректно введені параметри в текстове поле");
-                case Adding.Sub_Plan:
-                    words = ParserOfAddedInfo.TrimValue(value1, value2);
-                    if(Equals(2, words.Count()))
-                    {
-                        connection.AddSub(words);
-                        break;
-                    }
-                    throw new Exception("Не коректно введені параметри в текстове поле");
+                var connection = new DB();
+                var value1 = First_box.Text;
+                var value2 = Second_box.Text;
+                switch (this.Option)
+                {
+                    case Adding.Genre:
+                        var words = ParserOfAddedInfo.TrimValue(value1);
+                        if (Equals(words.Count(), 1))
+                        {
+                            //call db method
+                            connection.AddGenre(words.First());
+                            break;
+                        }
+                        // кинути ексепшн
+                        throw new Exception("Не коректно введені параметри в текстове поле");
+                    case Adding.Movie:
+                        words = ParserOfAddedInfo.TrimValue(value1, value2);
+                        if (Equals(4, words.Count()))
+                        {
+                            //call db method
+                            connection.AddMovie(words);
+                            break;
+                        }
+                        // throw an exception
+                        throw new Exception("Не коректно введені параметри в текстове поле");
+                    case Adding.Like:
+                        words = ParserOfAddedInfo.TrimValue(value1, value2);
+                        if (Equals(2, words.Count()))
+                        {
+                            //call db method
+                            connection.AddLike(words);
+                            break;
+                        }
+                        throw new Exception("Не коректно введені параметри в текстове поле");
+                    case Adding.Sub_Plan:
+                        words = ParserOfAddedInfo.TrimValue(value1, value2);
+                        if (Equals(2, words.Count()))
+                        {
+                            connection.AddSub(words);
+                            break;
+                        }
+                        throw new Exception("Не коректно введені параметри в текстове поле");
+                }
+            }
+            catch(Exception ex){
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

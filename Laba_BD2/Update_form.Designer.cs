@@ -28,12 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Update_form));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.Par_label = new System.Windows.Forms.Label();
-            this.Enter_label = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Par_box = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.Execute_btn = new System.Windows.Forms.Button();
             this.Delete_Genre = new System.Windows.Forms.RadioButton();
             this.Update_Sub_Prise = new System.Windows.Forms.RadioButton();
             this.Delete_Sub_Radio = new System.Windows.Forms.RadioButton();
@@ -45,15 +48,16 @@
             this.Delete_label = new System.Windows.Forms.Label();
             this.Update_label = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.Par_label);
-            this.panel1.Controls.Add(this.Enter_label);
+            this.panel1.Controls.Add(this.panel6);
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -61,23 +65,25 @@
             this.panel1.Size = new System.Drawing.Size(800, 59);
             this.panel1.TabIndex = 0;
             // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.Par_label);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(0, 0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(527, 59);
+            this.panel6.TabIndex = 1;
+            // 
             // Par_label
             // 
-            this.Par_label.AutoSize = true;
-            this.Par_label.Location = new System.Drawing.Point(442, 20);
+            this.Par_label.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.Par_label.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Par_label.Location = new System.Drawing.Point(0, 0);
             this.Par_label.Name = "Par_label";
-            this.Par_label.Size = new System.Drawing.Size(50, 20);
+            this.Par_label.Size = new System.Drawing.Size(527, 59);
             this.Par_label.TabIndex = 2;
             this.Par_label.Text = "label2";
-            // 
-            // Enter_label
-            // 
-            this.Enter_label.AutoSize = true;
-            this.Enter_label.Location = new System.Drawing.Point(348, 20);
-            this.Enter_label.Name = "Enter_label";
-            this.Enter_label.Size = new System.Drawing.Size(60, 20);
-            this.Enter_label.TabIndex = 1;
-            this.Enter_label.Text = "Введіть";
+            this.Par_label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // panel2
             // 
@@ -99,6 +105,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.panel7);
             this.panel3.Controls.Add(this.Delete_Genre);
             this.panel3.Controls.Add(this.Update_Sub_Prise);
             this.panel3.Controls.Add(this.Delete_Sub_Radio);
@@ -112,10 +119,32 @@
             this.panel3.Size = new System.Drawing.Size(800, 391);
             this.panel3.TabIndex = 1;
             // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.Execute_btn);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel7.Location = new System.Drawing.Point(0, 324);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(800, 67);
+            this.panel7.TabIndex = 4;
+            // 
+            // Execute_btn
+            // 
+            this.Execute_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.Execute_btn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Execute_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Execute_btn.Location = new System.Drawing.Point(0, 0);
+            this.Execute_btn.Name = "Execute_btn";
+            this.Execute_btn.Size = new System.Drawing.Size(800, 67);
+            this.Execute_btn.TabIndex = 0;
+            this.Execute_btn.Text = "Виконати";
+            this.Execute_btn.UseVisualStyleBackColor = false;
+            this.Execute_btn.Click += new System.EventHandler(this.Execute_btn_Click);
+            // 
             // Delete_Genre
             // 
             this.Delete_Genre.AutoSize = true;
-            this.Delete_Genre.Location = new System.Drawing.Point(531, 219);
+            this.Delete_Genre.Location = new System.Drawing.Point(550, 199);
             this.Delete_Genre.Name = "Delete_Genre";
             this.Delete_Genre.Size = new System.Drawing.Size(137, 24);
             this.Delete_Genre.TabIndex = 3;
@@ -127,7 +156,7 @@
             // Update_Sub_Prise
             // 
             this.Update_Sub_Prise.AutoSize = true;
-            this.Update_Sub_Prise.Location = new System.Drawing.Point(90, 265);
+            this.Update_Sub_Prise.Location = new System.Drawing.Point(90, 252);
             this.Update_Sub_Prise.Name = "Update_Sub_Prise";
             this.Update_Sub_Prise.Size = new System.Drawing.Size(196, 24);
             this.Update_Sub_Prise.TabIndex = 3;
@@ -139,7 +168,7 @@
             // Delete_Sub_Radio
             // 
             this.Delete_Sub_Radio.AutoSize = true;
-            this.Delete_Sub_Radio.Location = new System.Drawing.Point(527, 265);
+            this.Delete_Sub_Radio.Location = new System.Drawing.Point(550, 252);
             this.Delete_Sub_Radio.Name = "Delete_Sub_Radio";
             this.Delete_Sub_Radio.Size = new System.Drawing.Size(160, 24);
             this.Delete_Sub_Radio.TabIndex = 1;
@@ -151,7 +180,7 @@
             // Delete_Movie
             // 
             this.Delete_Movie.AutoSize = true;
-            this.Delete_Movie.Location = new System.Drawing.Point(531, 173);
+            this.Delete_Movie.Location = new System.Drawing.Point(550, 142);
             this.Delete_Movie.Name = "Delete_Movie";
             this.Delete_Movie.Size = new System.Drawing.Size(141, 24);
             this.Delete_Movie.TabIndex = 2;
@@ -163,7 +192,7 @@
             // Update_Movie_Sub_Radio
             // 
             this.Update_Movie_Sub_Radio.AutoSize = true;
-            this.Update_Movie_Sub_Radio.Location = new System.Drawing.Point(90, 219);
+            this.Update_Movie_Sub_Radio.Location = new System.Drawing.Point(90, 199);
             this.Update_Movie_Sub_Radio.Name = "Update_Movie_Sub_Radio";
             this.Update_Movie_Sub_Radio.Size = new System.Drawing.Size(207, 24);
             this.Update_Movie_Sub_Radio.TabIndex = 2;
@@ -175,7 +204,7 @@
             // Update_Movie_Prise_Radio
             // 
             this.Update_Movie_Prise_Radio.AutoSize = true;
-            this.Update_Movie_Prise_Radio.Location = new System.Drawing.Point(90, 173);
+            this.Update_Movie_Prise_Radio.Location = new System.Drawing.Point(90, 142);
             this.Update_Movie_Prise_Radio.Name = "Update_Movie_Prise_Radio";
             this.Update_Movie_Prise_Radio.Size = new System.Drawing.Size(176, 24);
             this.Update_Movie_Prise_Radio.TabIndex = 1;
@@ -233,14 +262,16 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Update_form";
-            this.Text = "Update_form";
+            this.Text = "Редагування інформації";
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.panel6.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.panel7.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -250,7 +281,6 @@
 
         private Panel panel1;
         private Label Par_label;
-        private Label Enter_label;
         private Panel panel2;
         private TextBox Par_box;
         private Panel panel3;
@@ -264,5 +294,8 @@
         private RadioButton Delete_Movie;
         private RadioButton Delete_Sub_Radio;
         private Panel panel4;
+        private Panel panel6;
+        private Panel panel7;
+        private Button Execute_btn;
     }
 }

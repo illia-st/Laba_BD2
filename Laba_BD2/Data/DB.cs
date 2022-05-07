@@ -6,6 +6,9 @@ namespace Laba_BD2.Data
 {
     internal class DB
     {
+        ~DB(){
+            CloseConnection();
+        }
         private SqlConnection connection = new SqlConnection("Data Source = DESKTOP-1B5F523; Initial Catalog=Laba_DB; Integrated Security = True;");
         private void OpenConnection()
         {
@@ -20,6 +23,259 @@ namespace Laba_BD2.Data
             if (connection.State == System.Data.ConnectionState.Open)
             {
                 connection.Close();
+            }
+        }
+        public void Delete_Genre(List<string> values)
+        {
+            try
+            {
+                StringBuilder genre_name = new StringBuilder();
+                genre_name.Append(values.First().Trim().ToLower());
+                genre_name[0] = char.ToUpper(genre_name[0]);
+                string checkIfGenreExist = "select id from Genre where genre_name = @Genre_name";
+                SqlCommand GenreId_cm = new SqlCommand(checkIfGenreExist, connection);
+                GenreId_cm.Parameters.AddWithValue("@Genre_name", genre_name.ToString());
+                int? genre_id = null;
+                this.OpenConnection();
+                ReadValue(GenreId_cm, out genre_id);
+                if (genre_id == null)
+                {
+                    throw new Exception("Такого жанру не існує в БД");
+                }
+                string deleteCommand = "delete from Genre where id = @Id";
+                SqlCommand Delete_cm = new SqlCommand(deleteCommand, connection);
+                Delete_cm.Parameters.AddWithValue("@Id", Convert.ToInt32(genre_id));
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Delete_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви видалили жанр";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+        }
+        public void Delete_Sub(List<string> values)
+        {
+            try
+            {
+                StringBuilder sub_name = new StringBuilder();
+                sub_name.Append(values.First().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+                string checkIfSubExist = "select id from Sub_Plan where sub_name = @Sub_name";
+                SqlCommand SubId_cm = new SqlCommand(checkIfSubExist, connection);
+                SubId_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                int? sub_id = null;
+                this.OpenConnection();
+                ReadValue(SubId_cm, out sub_id);
+                if (sub_id == null)
+                {
+                    throw new Exception("Такої підписки не існує в БД");
+                }
+                string deleteCommand = "delete from Sub_Plan where id = @Id";
+                SqlCommand Delete_cm = new SqlCommand(deleteCommand, connection);
+                Delete_cm.Parameters.AddWithValue("@Id", Convert.ToInt32(sub_id));
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Delete_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви видалили підписку";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+        }
+        public void Delete_Movie(List<string> values)
+        {
+            try
+            {
+                StringBuilder movie_name = new StringBuilder();
+                movie_name.Append(values.First().Trim());
+                string checkIfFilmExist = "select id from Movie where name = @Film_name";
+                SqlCommand FilmId_cm = new SqlCommand(checkIfFilmExist, connection);
+                FilmId_cm.Parameters.AddWithValue("@Film_name", movie_name.ToString());
+                int? film_id = null;
+                this.OpenConnection();
+                ReadValue(FilmId_cm, out film_id);
+                if (film_id == null)
+                {
+                    throw new Exception("Такого фільму не існує в БД");
+                }
+                string deleteCommand = "delete from Movie where id = @Id";
+                SqlCommand Delete_cm = new SqlCommand(deleteCommand, connection);
+                Delete_cm.Parameters.AddWithValue("@Id", Convert.ToInt32(film_id));
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Delete_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви видалили фільм";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+        }
+        public void Update_Sub_Prise(List<string> values)
+        {
+            try
+            {
+                StringBuilder sub_name = new StringBuilder();
+                sub_name.Append(values.First().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+                uint sub_prise = new uint();
+                if (!UInt32.TryParse(values.Last(), out sub_prise))
+                {
+                    throw new Exception("Введіть валідне значення ціни(додатне число)");
+                }
+                string getSubFromFilm = "select id from Sub_Plan where sub_name = @Sub_Name";
+                SqlCommand GetSub_cm = new SqlCommand(getSubFromFilm, connection);
+
+                GetSub_cm.Parameters.AddWithValue("@Sub_Name", sub_name.ToString());
+                int? sub_id = null;
+                this.OpenConnection();
+                ReadValue(GetSub_cm, out sub_id);
+
+                if (sub_id == null)
+                {
+                    throw new Exception("Немає такої підписки в БД");
+                }
+                string updateCommand = "update Sub_Plan set prise = @Prise where id = @Sub_id";
+                SqlCommand Update_cm = new SqlCommand(updateCommand, connection);
+                Update_cm.Parameters.AddWithValue("@Prise", Convert.ToInt32(sub_prise));
+                Update_cm.Parameters.AddWithValue("@Sub_id", Convert.ToInt32(sub_id));
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Update_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви змінили ціну підписці";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+        }
+        public void Update_Movie_Sub(List<string> values)
+        {
+            try
+            {
+                StringBuilder movie_name = new StringBuilder()
+                    , sub_name = new StringBuilder();
+                movie_name.Append(values.First().Trim());
+                sub_name.Append(values.Last().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+                string checkIfFilmExist = "select id from Movie where name = @Film_name";
+                string find_SubId = "select id from Sub_Plan where sub_name = @Sub_name";
+                SqlCommand SubId_cm = new SqlCommand(find_SubId, connection),
+                    FilmId_cm = new SqlCommand(checkIfFilmExist, connection);
+                SubId_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                FilmId_cm.Parameters.AddWithValue("@Film_name", movie_name.ToString());
+                int? sub_id = null, film_id = null;
+
+                this.OpenConnection();
+                ReadValue(SubId_cm, out sub_id);
+                ReadValue(FilmId_cm, out film_id);
+
+                if(sub_id == null)
+                {
+                    throw new Exception("Такої підписки не існує в БД");
+                }
+                if(film_id == null)
+                {
+                    throw new Exception("Такого фільму не існує в БД");
+                }
+                string updateCommand = "update Movie set sub_id = @Sub_id ,prise = @Prise where id = @Movie_id";
+                SqlCommand Update_cm = new SqlCommand(updateCommand, connection);
+                Update_cm.Parameters.AddWithValue("@Sub_id", sub_id);
+                Update_cm.Parameters.AddWithValue("@Movie_id", film_id);
+                Update_cm.Parameters.AddWithValue("@Prise", sub_id == 5 ? 1 : 0);
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Update_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви змінили підписку";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+        }
+        public void Update_Movie_Prise(List<string> values)
+        {
+            try
+            {
+                StringBuilder movie_name = new StringBuilder();
+                movie_name.Append(values.First().Trim());
+                uint movie_prise = new uint();
+                if (!UInt32.TryParse(values.Last(), out movie_prise))
+                {
+                    throw new Exception("Введіть валідне значення ціни(число)");
+                }
+                string checkIfFilmExist = "select id from Movie where name = @Film_name";
+                string getSubFromFilm = "select sub_id from Movie where id = @Film_id";
+                int? MovieId = null, Sub_id = null;
+                this.OpenConnection();
+                SqlCommand GetMovieIf_cm = new SqlCommand(checkIfFilmExist, connection);
+                GetMovieIf_cm.Parameters.AddWithValue("@Film_Name", movie_name.ToString());
+                ReadValue(GetMovieIf_cm, out MovieId);
+
+                if (Equals(MovieId, null))
+                {
+                    throw new Exception("Такий фільм не існує в БД. Спочатку додайте його.");
+                }
+                this.CloseConnection();
+                this.OpenConnection();
+                SqlCommand GetSubId_cm = new SqlCommand(getSubFromFilm, connection);
+                GetSubId_cm.Parameters.AddWithValue("@Film_id", Convert.ToInt32(MovieId));
+                ReadValue(GetSubId_cm, out Sub_id, "sub_id");
+                if (!Equals(Sub_id, 5) && movie_prise != 0)
+                {
+                    throw new Exception("Фільм з підпискою не може мати власної ціни,\n " +
+                        "Спочатку змініть підписку");
+                }
+                if (Equals(Sub_id, 5) && Equals(movie_prise, 0))
+                {
+                    throw new Exception("Фільм без підписки не може бути безкоштовним,\n " +
+                        "Спочатку змініть підписку");
+                }
+                string updateCommand = "update Movie set prise = @Movie_prise where id = @Movie_id";
+                SqlCommand Update_cm = new SqlCommand(updateCommand, connection);
+                Update_cm.Parameters.AddWithValue("@Movie_id", Convert.ToInt32(MovieId));
+                Update_cm.Parameters.AddWithValue("@Movie_prise", Convert.ToInt32(movie_prise));
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                sqlDataAdapter.InsertCommand = Update_cm;
+                sqlDataAdapter.InsertCommand.ExecuteNonQuery();
+                string message = "Ви змінили ціну фільму";
+                MessageBox.Show(message, " ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
             }
         }
         public void AddGenre(string value)
@@ -117,6 +373,17 @@ namespace Laba_BD2.Data
                 while (reader.Read())
                 {
                     value = Convert.ToInt32(reader["id"]);
+                }
+            }
+        }
+        private void ReadValue(SqlCommand com, out int? value, string column_name)
+        {
+            value = null;
+            using (SqlDataReader reader = com.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    value = Convert.ToInt32(reader[column_name]);
                 }
             }
         }

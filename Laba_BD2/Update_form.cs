@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Laba_BD2.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,22 +35,22 @@ namespace Laba_BD2
             switch (editing)
             {
                 case Editing.Update_Movie_Prise:
-                    Par_label.Text = "назву фільму";
+                    Par_label.Text = "Введіть назву фільму > ";
                     break;
                 case Editing.Update_Movie_Sub:
-                    Par_label.Text = "назву фільму та його нову підписку";
+                    Par_label.Text = "Введіть назву фільму та його нову підписку > ";
                     break;
                 case Editing.Update_Sub_Prise:
-                    Par_label.Text = "назву підписки та її нову ціну";
+                    Par_label.Text = "Введіть назву підписки та її нову ціну > ";
                     break;
                 case Editing.Delete_Movie:
-                    Par_label.Text = "назву фільму";
+                    Par_label.Text = "Введіть назву фільму > ";
                     break;
                 case Editing.Delete_Sub:
-                    Par_label.Text = "назву підписки";
+                    Par_label.Text = "Введіть назву підписки > ";
                     break;
                 case Editing.Delete_Genre:
-                    Par_label.Text = "назву жанру";
+                    Par_label.Text = "Введіть назву жанру > ";
                     break;
             }
         }
@@ -87,6 +88,71 @@ namespace Laba_BD2
         {
             editing = Editing.Delete_Sub;
             UpdateLabelValue();
+        }
+
+        private void Execute_btn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var connection = new DB();
+                var value = Par_box.Text;
+                var words = ParserOfAddedInfo.TrimValue(value);
+                switch (editing)
+                {
+                    case Editing.Update_Movie_Prise:
+                        if(words.Count() != 2)
+                        {
+                            throw new Exception("Введіть 2 параметри. Обов'язково через кому.");
+                        }
+                        //call db method
+                        connection.Update_Movie_Prise(words);
+                        break;
+                    case Editing.Update_Movie_Sub:
+                        if (words.Count() != 2)
+                        {
+                            throw new Exception("Введіть 2 параметри. Обов'язково через кому.");
+                        }
+                        //call db method
+                        connection.Update_Movie_Sub(words);
+                        break;
+                    case Editing.Update_Sub_Prise:
+                        if (words.Count() != 2)
+                        {
+                            throw new Exception("Введіть 2 параметри. Обов'язково через кому.");
+                        }
+                        //call db method
+                        connection.Update_Sub_Prise(words);
+                        break;
+                    case Editing.Delete_Movie:
+                        if (words.Count() != 1)
+                        {
+                            throw new Exception("Введіть 1 параметр");
+                        }
+                        //call db method
+                        connection.Delete_Movie(words);
+                        break;
+                    case Editing.Delete_Sub:
+                        if (words.Count() != 1)
+                        {
+                            throw new Exception("Введіть 1 параметр");
+                        }
+                        //call db method
+                        connection.Delete_Sub(words);
+                        break;
+                    case Editing.Delete_Genre:
+                        if (words.Count() != 1)
+                        {
+                            throw new Exception("Введіть 1 параметр");
+                        }
+                        //call db method
+                        connection.Delete_Genre(words);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }
