@@ -25,6 +25,358 @@ namespace Laba_BD2.Data
                 connection.Close();
             }
         }
+        private void ReadValue(SqlCommand com, out int? value)
+        {
+            value = null;
+            using (SqlDataReader reader = com.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    value = Convert.ToInt32(reader["id"]);
+                }
+            }
+        }
+        private void ReadValue(SqlCommand com, out int? value, string column_name)
+        {
+            value = null;
+            using (SqlDataReader reader = com.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    value = Convert.ToInt32(reader[column_name]);
+                }
+            }
+        }
+        private void ReadValue(SqlCommand com, ref List<string> value, string column_name)
+        {
+            value.Clear();
+            using (SqlDataReader reader = com.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    value.Add(reader[column_name].ToString());
+                }
+            }
+            value.OrderBy(s => s);
+        }
+        public List<string> Simple_1(List<string> values)
+        {
+            var logins = new List<string>();
+            try
+            {
+                string simple_1 = "select login "
+                                     + "from User_Info "
+                                     + "where sub_id = (select sub_id from Movie where name = @Movie_Name) "
+                                     + "order by login; ";
+                StringBuilder movie_name = new StringBuilder();
+                movie_name.Append(values.First().Trim());
+                string find_movie = "select id from Movie where name = @Movie_name;";
+                SqlCommand Find_cm = new SqlCommand(find_movie, connection);
+                Find_cm.Parameters.AddWithValue("@Movie_name", movie_name.ToString());
+                int? movie_id = null;
+                this.OpenConnection();
+                ReadValue(Find_cm, out movie_id);
+                if (movie_id == null)
+                {
+                    throw new Exception("Не існує такого фільму");
+                }
+                SqlCommand Get_logins_cm = new SqlCommand(simple_1, connection);
+                Get_logins_cm.Parameters.AddWithValue("@Movie_Name", movie_name.ToString());
+                ReadValue(Get_logins_cm, ref logins, "login");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return logins;
+        }
+        public List<string> Simple_2(List<string> values)
+        {
+            var genres = new List<string>();
+            try
+            {
+                string simple_2 = "select genre_name "
+                                     + "from Genre "
+                                     + "where id in (select DISTINCT genre_id from Movie where sub_id = (select DISTINCT id from Sub_Plan where sub_name = @Sub_name)) "
+                                     + "order by genre_name; ";
+                StringBuilder sub_name = new StringBuilder();
+                sub_name.Append(values.First().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+                string find_sub = "select id from Sub_Plan where sub_name = @Sub_name;";
+                SqlCommand Find_cm = new SqlCommand(find_sub, connection);
+                Find_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                int? sub_id = null;
+                this.OpenConnection();
+                ReadValue(Find_cm, out sub_id);
+                if (sub_id == null)
+                {
+                    throw new Exception("Не існує такого жанру");
+                }
+                SqlCommand Get_genres_cm = new SqlCommand(simple_2, connection);
+                Get_genres_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                ReadValue(Get_genres_cm, ref genres, "genre_name");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return genres;
+        } 
+        public List<string> Simple_3(List<string> values)
+        {
+            var movies = new List<string>();
+            try
+            {
+                string simple_3 = "select name "
+                                     + "from Movie "
+                                     + "where sub_id in (select id from Sub_Plan where prise < @Prise and prise != -1) "
+                                     + "order by name; ";
+                uint sub_prise = new uint();
+                if(!UInt32.TryParse(values.First(), out sub_prise))
+                {
+                    throw new Exception("Введений параметр має бути додатним числом");
+                }
+                this.OpenConnection();
+                SqlCommand Get_movies_cm = new SqlCommand(simple_3, connection);
+                Get_movies_cm.Parameters.AddWithValue("@Prise", Convert.ToInt32(sub_prise));
+                ReadValue(Get_movies_cm, ref movies, "name");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return movies;
+        }
+        public List<string> Simple_4(List<string> values)
+        {
+            var logins = new List<string>();
+            try
+            {
+                string simple_4 = "select User_Info.login "
+                                     + "from "
+                                     + "User_Info "
+                                     + "inner join liked_film on liked_film.user_id = User_Info.id "
+                                     + "inner join Movie on liked_film.film_id = Movie.id "
+                                     + "inner join Sub_Plan on Sub_Plan.id = User_Info.sub_id "
+                                + "where "
+                                    + "Movie.name = @Movie_name and Sub_Plan.sub_name = @Sub_name ;";
+                StringBuilder movie_name = new StringBuilder()
+                    , sub_name = new StringBuilder();
+
+                movie_name.Append(values.First().Trim());
+                
+                sub_name.Append(values.Last().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+                string find_sub = "select id from Sub_Plan where sub_name = @Sub_name;";
+                string find_movie = "select id from Movie where name = @Movie_name;";
+                SqlCommand Find_sub_cm = new SqlCommand(find_sub, connection)
+                    , Find_movie_cm = new SqlCommand(find_movie, connection);
+                Find_sub_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                Find_movie_cm.Parameters.AddWithValue("@Movie_name", movie_name.ToString());
+                int? sub_id = null, movie_id = null;
+                this.OpenConnection();
+                ReadValue(Find_sub_cm, out sub_id);
+                ReadValue(Find_movie_cm, out movie_id);
+                if (sub_id == null)
+                {
+                    throw new Exception("Немає такого жанру в БД");
+                }
+                if(movie_id == null)
+                {
+                    throw new Exception("Немає такого фільму в БД");
+                }
+                SqlCommand Get_logins_cm = new SqlCommand(simple_4, connection);
+                Get_logins_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                Get_logins_cm.Parameters.AddWithValue("@Movie_name", movie_name.ToString());
+                ReadValue(Get_logins_cm, ref logins, "login");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return logins;
+        }
+        public List<string> Simple_5(List<string> values)
+        {
+            var subs = new List<string>();
+            try
+            {
+                string simple_5 = "select Sub_Plan.sub_name "
+                                + "from "
+                                     + "Sub_Plan "
+                                     + "inner join User_Info on Sub_Plan.id = User_Info.sub_id "
+                                     + "inner join liked_film on User_Info.id = liked_film.user_id "
+                                     + "inner join Movie on liked_film.film_id = Movie.id "
+                                + "where Movie.name = @Movie_name "
+                                + "order by Sub_Plan.sub_name; ";
+                StringBuilder movie_name = new StringBuilder();
+                movie_name.Append(values.First().Trim());
+
+                string find_movie = "select id from Movie where name = @Movie_name;";
+                SqlCommand Find_cm = new SqlCommand(find_movie, connection);
+                Find_cm.Parameters.AddWithValue("@Movie_name", movie_name.ToString());
+                int? movie_id = null;
+                this.OpenConnection();
+                ReadValue(Find_cm, out movie_id);
+                if (movie_id == null)
+                {
+                    throw new Exception("Немає такого фільму в БД");
+                }
+                SqlCommand Get_subs_cm = new SqlCommand(simple_5, connection);
+                Get_subs_cm.Parameters.AddWithValue("@Movie_name", movie_name.ToString());
+                ReadValue(Get_subs_cm, ref subs, "sub_name");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return subs;
+        }
+        public List<string> Complicated_1(List<string> values)
+        {
+            var logins = new List<string>();
+            try
+            {
+                string com_1 = "SELECT "
+                                       + "User_Info.login "
+                                 + "FROM "
+                                       + "User_Info "
+                                       + "INNER JOIN liked_film ON User_Info.id = liked_film.user_id "
+                                       + "INNER JOIN(SELECT Movie.id FROM Movie WHERE Movie.genre_id = @Genre_id) films ON liked_film.film_id = films.id "
+                                 + "GROUP BY User_Info.login "
+                                 + "HAVING COUNT(liked_film.film_id) >= (SELECT COUNT(Movie.id) FROM Movie WHERE Movie.genre_id = @Genre_id) "
+                                 + "ORDER BY User_Info.login;";
+                StringBuilder genre_name = new StringBuilder();
+                genre_name.Append(values.First().Trim().ToLower());
+                genre_name[0] = char.ToUpper(genre_name[0]);
+
+                string checkIfGenreExist = "select id from Genre where genre_name = @Genre_name";
+                SqlCommand GenreId_cm = new SqlCommand(checkIfGenreExist, connection);
+                GenreId_cm.Parameters.AddWithValue("@Genre_name", genre_name.ToString());
+                int? genre_id = null;
+                this.OpenConnection();
+                ReadValue(GenreId_cm, out genre_id);
+                if (genre_id == null)
+                {
+                    throw new Exception("Такого жанру не існує в БД");
+                }
+                SqlCommand Get_logins = new SqlCommand(com_1, connection);
+                Get_logins.Parameters.AddWithValue("@Genre_id", Convert.ToInt32(genre_id));
+                ReadValue(Get_logins, ref logins, "login");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return logins;
+        }
+        public List<string> Complicated_2(List<string> values)
+        {
+            var logins = new List<string>();
+            try
+            {
+                string com_3 = "SELECT "
+                                       + "User_Info.login "
+                                 + "FROM "
+                                       + "User_Info "
+                                       + "INNER JOIN liked_film ON User_Info.id = liked_film.user_id "
+                                       + "INNER JOIN (SELECT Movie.id FROM Movie WHERE Movie.sub_id = @Sub_id) films ON liked_film.film_id = films.id "
+                                 + "GROUP BY User_Info.login "
+                                 + "HAVING COUNT(liked_film.film_id) >= (SELECT COUNT(Movie.id) FROM Movie WHERE Movie.sub_id = @Sub_id) "
+                                 + "ORDER BY User_Info.login;";
+                StringBuilder sub_name = new StringBuilder();
+                sub_name.Append(values.Last().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+
+                string find_sub = "select id from Sub_Plan where sub_name = @Sub_name;";
+                SqlCommand Find_sub_cm = new SqlCommand(find_sub, connection);
+                Find_sub_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                int? sub_id = null;
+                this.OpenConnection();
+                ReadValue(Find_sub_cm, out sub_id);
+                if (sub_id == null)
+                {
+                    throw new Exception("Такої підписки не існує в БД");
+                }
+                SqlCommand Get_logins = new SqlCommand(com_3, connection);
+                Get_logins.Parameters.AddWithValue("@Sub_id", Convert.ToInt32(sub_id));
+                ReadValue(Get_logins, ref logins, "login");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return logins;
+        }
+        public List<string> Complicated_3(List<string> values)
+        {
+            var subs = new List<string>();
+            try
+            {
+                string com_3 = "SELECT "
+                                    + "Sub_Plan.sub_name "
+                                 + "FROM "
+                                    + "Sub_Plan "
+                                    + "INNER JOIN Movie ON Movie.sub_id = Sub_Plan.id "
+                                 + "WHERE Sub_Plan.id != @Sub_id "
+                                 + "GROUP BY Sub_Plan.sub_name "
+                                 + " HAVING Count(Movie.name) = (SELECT Count(Movie.id) FROM Movie WHERE Movie.sub_id = @Sub_id)";
+                StringBuilder sub_name = new StringBuilder();
+                sub_name.Append(values.Last().Trim().ToLower());
+                sub_name[0] = char.ToUpper(sub_name[0]);
+
+                string find_sub = "select id from Sub_Plan where sub_name = @Sub_name;";
+                SqlCommand Find_sub_cm = new SqlCommand(find_sub, connection);
+                Find_sub_cm.Parameters.AddWithValue("@Sub_name", sub_name.ToString());
+                int? sub_id = null;
+                this.OpenConnection();
+                ReadValue(Find_sub_cm, out sub_id);
+                if (sub_id == null)
+                {
+                    throw new Exception("Такої підписки не існує в БД");
+                }
+                SqlCommand Get_subs = new SqlCommand(com_3, connection);
+                Get_subs.Parameters.AddWithValue("@Sub_id", Convert.ToInt32(sub_id));
+                ReadValue(Get_subs, ref subs, "sub_name");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
+            return subs;
+        }
         public void Delete_Genre(List<string> values)
         {
             try
@@ -363,28 +715,6 @@ namespace Laba_BD2.Data
             finally
             {
                 this.CloseConnection();
-            }
-        }
-        private void ReadValue(SqlCommand com, out int? value)
-        {
-            value = null;
-            using (SqlDataReader reader = com.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    value = Convert.ToInt32(reader["id"]);
-                }
-            }
-        }
-        private void ReadValue(SqlCommand com, out int? value, string column_name)
-        {
-            value = null;
-            using (SqlDataReader reader = com.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    value = Convert.ToInt32(reader[column_name]);
-                }
             }
         }
         public void AddMovie(List<string> values)
